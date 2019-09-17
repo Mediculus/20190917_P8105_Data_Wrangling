@@ -14,7 +14,7 @@ library(tidyverse)
 
 ## Load in a dataset
 
-```{r}
+```{r Jeff_example}
 
 # Reads in a dataset
 # 2 types of paths; absolute (the full path) vs relative (only refers to the relevant files)
@@ -22,8 +22,19 @@ library(tidyverse)
 
 # instead uses a relative path. the "." means "start here"; ".." means "one directory up"; "..." means 2 up...
 litters_data <- read_csv(file = "./data/FAS_litters.csv")   # uses relative path
-litters_data <- janitor::clean_names(litters_data)          # the "::" means x package::function in package
 
+# the "::" means package::function in package. Typically; if you only need 1 fx from a package, use the "::"
+litters_data <- janitor::clean_names(litters_data)
+
+
+```
+
+
+```{r learning_assess}
+
+# Practice loading FAS_pups.csv
+pups_data <- read_csv(file = "./data/FAS_pups.csv")
+pups_data <- janitor::clean_names(pups_data)
 
 ```
 
