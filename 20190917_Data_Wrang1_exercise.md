@@ -582,3 +582,52 @@ arrange(litters_data, pups_born_alive, gd0_weight)
     ## 10 Low7  #112                23.9        40.5          19               6
     ## # … with 39 more rows, and 2 more variables: pups_dead_birth <dbl>,
     ## #   pups_survive <dbl>
+
+## Piping data
+
+unlike the examples above where we do picking data, sort, filter, etc in
+sequence, we can use piping… `%>%` The shortcut is cmd + shift + M
+
+``` r
+litters_data = 
+  read_csv("./data/FAS_litters.csv") %>%
+  janitor::clean_names() %>% 
+  select(-pups_survive) %>% 
+  mutate(
+    wt_gain = gd18_weight - gd0_weight,
+    group = str_to_lower(group)) %>% 
+  drop_na(gd0_weight)
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   Group = col_character(),
+    ##   `Litter Number` = col_character(),
+    ##   `GD0 weight` = col_double(),
+    ##   `GD18 weight` = col_double(),
+    ##   `GD of Birth` = col_double(),
+    ##   `Pups born alive` = col_double(),
+    ##   `Pups dead @ birth` = col_double(),
+    ##   `Pups survive` = col_double()
+    ## )
+
+``` r
+# other uses for piping
+# litters_data %>% view() # views the data immediately
+
+# takes the gd0_weight from litters_data then takes the mean
+litters_data %>% pull(gd0_weight) %>% mean()
+```
+
+    ## [1] 24.37941
+
+The reason why you don’t need to specify which df in piping,
+
+``` r
+# litters_data = 
+ # read_csv("./data/FAS_litters.csv") %>%
+ # janitor::clean_names() %>%  # if we look at the usage of janitor::clean_names(), the first argument is 
+                               # clean_names(dat, ...) where dat is specifying which and in piping, this argument
+                               # defaults to dat = .  where "." signifies the "data i just worked with"
+ # select(-pups_survive)
+```
