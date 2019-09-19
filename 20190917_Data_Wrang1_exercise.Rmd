@@ -1,5 +1,5 @@
 ---
-title: "20190917_Data_Wrangling_Practice"
+title: "20190917_Data_Wrangling_1_Practice"
 author: "Kevin S.W."
 date: "9/17/2019"
 output: github_document
@@ -9,10 +9,12 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
+library(dplyr)
+library(readxl)
 
 ```
 
-# Data Wrangling Part 1 - Data Import
+# Data Wrangling 1 Part 1 - Data Import
 
 ## Load in a dataset
 
@@ -109,11 +111,109 @@ The reason why we use read "_" instead of "." is because using "." will make R "
 
 
 
-# Data Wrangling Part 2 - Data Manipulation
+# Data Wrangling 1 Part 2 - Data Manipulation
 
+Reading in and manipulating certain datasets in FAS dataset.
 
+## Selecting relevant data and modifying the "visualized" columns
 
 ```{r}
+
+# select(df, variable1 to get, variable2,...); the order matters i.e. if it's litter_number, group
+# it will show litter # first.
+select(litters_data, group, litter_number)  
+
+# starts_with() allows to select any column that "starts with..."
+# ends_with(), contains() does similar things
+select(litters_data, litter_number, gd0_weight, starts_with("pups")) 
+
+# using everything(); "everything else" will just pull whatever else remaining after the listed variables
+select(litters_data, litter_number, everything())
+
+# using (-) in front of the column will remove that column.
+select(litters_data, -group)
+
+# using (:) selects the "range" from:to
+select(litters_data, litter_number, gd0_weight:pups_born_alive)
+
+# renaming: newname = oldname. rename() only renames! while doing it within select() will also 
+# rearrange while renaming
+select(litters_data, GROUP = group, litter_number)
+
+```
+
+
+## Filtering!!
+
+What if we need to focus only certain values?
+
+```{r}
+
+# similar syntax; filter(dataset, which column == specific value)
+# the "==" is used universally to say/ask y is equal x. "=" is "assign x to y"
+filter(litters_data, group == "Con7")
+
+# the same == can be used for doubles
+filter(litters_data, gd_of_birth == 20)
+
+# can use different operators as well i.e. <, >...
+filter(litters_data, gd_of_birth < 20)
+
+# you can have multiple conditions as well
+filter(litters_data, group == "Con7", gd_of_birth == 20)
+
+# you can use the OR argument, which is the shift+backslash ( | ) although this is rarely used since (,) does the 
+# same thing. You can use AND (&) for "intersection"
+filter(litters_data, group == "Con7" | group == "Mod8")
+
+# if you want to "get a range"
+filter(litters_data, pups_born_alive >= 4, pups_born_alive <= 6)
+
+# if you want to see if a + b is == something
+filter(litters_data, gd0_weight + gd18_weight < 70)
+
+# filters only the missing variables
+filter(litters_data, is.na(gd0_weight))  # filters for na
+filter(litters_data, !is.na(gd0_weight)) # filters "not na"
+
+# instead, use drop_na(). This however, only removes the na in the specified column
+drop_na(litters_data, gd0_weight)
+
+# other signs/syntax
+# pups_survive != 4 <- pups_survive are not 4
+# !(pups_survive == 4) <- 
+# group %in% c("Con7", "Con8") <- looks for more than 1 variables in the column
+
+```
+
+## Mutating data
+
+Unlike select() or filter(), this actually modifies your dataframe
+
+```{r}
+
+# can use mutate to directly do operations between columns and add this new variable to the "last" column
+# or you can overwrite existing data (i.e. to_lower())
+mutate(litters_data, 
+       wt_gain = gd18_weight - gd0_weight,
+       group = str_to_lower(group),  # makes the "new" group to be all lower case
+       group = str_to_upper(group),
+)
+
+```
+
+## Arranging data
+
+```{r}
+
+# arranging based on arrange(df, which column); like "sorting"
+arrange(litters_data, pups_born_alive)
+
+#arranging in the reverse order
+arrange(litters_data, desc(pups_born_alive))
+
+# arranging in "multiple" orders -> order based on 1, then 2
+arrange(litters_data, pups_born_alive, gd0_weight)
 
 ```
 
