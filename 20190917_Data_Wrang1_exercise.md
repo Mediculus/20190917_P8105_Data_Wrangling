@@ -3,6 +3,8 @@
 Kevin S.W.
 9/17/2019
 
+# Data Wrangling Part 1 - Data Import
+
 ## Load in a dataset
 
 ``` r
@@ -127,3 +129,5 @@ make R "read it as a whole datapoint". With * , it defaults it as a
 tibble while . defaults to dataframe. This makes R print out everything
 in the data if we use . while we only have a”preview" with \_ .
 Furthermore, since R’s base dataframe
+
+# Data Wrangling Part 2 - Data Manipulation
