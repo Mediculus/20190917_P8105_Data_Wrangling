@@ -343,3 +343,41 @@ lotr_data = bind_rows(fellowship_data, two_towers, return_king) %>%
 
 ```
 
+### Merging datasets
+
+Instead of just joining spread data across a single file, we merge separate files.
+
+```{r}
+
+# data from each pup with unique identifiers
+pup_data = 
+  read_csv("./data/FAS_pups.csv", col_types = "ciiiii") %>%
+  janitor::clean_names() %>%
+  mutate(sex = recode(sex, `1` = "male", `2` = "female")) 
+
+# data on the litters and which pup belongs to which litter group
+litter_data = 
+  read_csv("./data/FAS_litters.csv", col_types = "ccddiiii") %>%
+  janitor::clean_names() %>%
+  select(-pups_survive) %>%
+  mutate(
+    wt_gain = gd18_weight - gd0_weight,
+    group = str_to_lower(group))
+
+# since we want to merge all the data, we use left_join() because the pups are more specific i.e. we likely 
+# have all the critical data when we "evaluate" by pup_data
+# the command "by = "str" " tells the command to compare using that value
+fas_data = 
+  left_join(pup_data, litter_data, by = "litter_number") 
+# be specific on which identifier you want to use.
+# you can also use c() to specify multiple criterias. 
+# if you need to merge two variables which have different column names, use by = c("a" = "b")
+
+# What if we use full_join?
+# you'd notice there's 2 extra rows, why is it?
+fas_data2 = full_join(pup_data, litter_data, by = "litter_number") %>% 
+  filter(is.na(sex)) %>% view()
+#if we see the filter by sex, we see that full merges id that has "no values" and insert them.
+
+```
+
