@@ -256,3 +256,62 @@ The reason why you don't need to specify which df in piping,
 
 ```
 
+# Data Wrangling Part 3 - 2019/09/24
+
+## Tidying data
+
+```{r}
+
+library(tidyverse)
+
+```
+
+### Going from wide to long
+
+Oftentimes, we need to tidy data into the "long format" in order to be able to plot it nicely
+
+```{r}
+
+## pivot_longer(data, range of columns, what that column name will be, what the values in the column will be)
+## names_prefix = "" removes the listed prefix
+pulse_data = 
+  haven::read_sas("./data/public_pulse_data.sas7bdat") %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(
+    bdi_score_bl:bdi_score_12m,
+    names_to = "visit",
+    names_prefix = "bdi_score_",
+    values_to = "bdi score"
+    ) %>%  
+  mutate(
+    visit = recode(visit, "bl" = "00m") # recode() allows to re-assign x value to y value
+  ) %>% 
+    view()
+
+```
+
+### Separating in litters data
+In litters data, the group variable combines the "intervention" variables and "day" variables (con7, con8, etc). We need to separate this
+```{r}
+
+## SEparate(data, column select, into = c(...list), separate after "x characters")
+litters_data <- read_csv(file = "./data/FAS_litters.csv") %>% 
+  janitor::clean_names() %>% 
+  separate(col = group, into = c("dose", "day_of_tx"), 3)
+  
+```
+
+### Pivoting wider
+sometimes you want wider format as opposed to long-format (i.e. when you need to find differences, etc)
+
+```{r}
+analysis_result = tibble(
+  group = c("treatment", "treatment", "placebo", "placebo"),
+  time = c("pre", "post", "pre", "post"),
+  mean = c(4, 8, 3.5, 4)
+  ) %>% 
+  pivot_wider(names_from = "time",
+              values_from = "mean") ## pivot_wider(data, column names from, values from...)
+
+```
+
